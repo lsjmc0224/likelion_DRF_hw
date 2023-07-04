@@ -6,29 +6,20 @@ class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.SerializerMethodField(read_only=True)
 
     def get_tracks(self, instance):
-        serializer = TrackSerializer(instance.tracks, many=True)
-        return serializer.data
+        tracks = instance.tracks.all()
+        return [track.title for track in tracks]
 
     class Meta:
         model = Album
         fields = ['id', 'title', 'artist', 'description', 'year', 'tracks']
 
 class TrackSerializer(serializers.ModelSerializer):
-
-    album = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Track
-        fields = '__all__'
-        read_only_fields = ['album']
+    album = serializers.SerializerMethodField(read_only=True)
 
     def get_album(self, instance):
-        serializer = AlbumSerializer(instance.album, many=True)
-        return serializer.data
-
-# class TrackSerializer(serializers.ModelSerializer):
+        return instance.album.title
     
-#     class Meta:
-#         model = Track
-#         fields = '__all__'
-#         read_only_fields = ['album']
+    class Meta:
+        model = Track
+        exclude = ['id']
+        read_only_fields = ['album']
