@@ -12,8 +12,8 @@ from django.shortcuts import get_object_or_404
 def album_list_create(request):
 
     if request.method == 'GET':
-        album = Album.objects.all()
-        serializer = AlbumSerializer(album, many=True)
+        albums = Album.objects.all()
+        serializer = AlbumSerializer(albums, many=True)
         return Response(data=serializer.data)
     
     if request.method == 'POST':

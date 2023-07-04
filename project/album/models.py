@@ -13,3 +13,4 @@ class Track(models.Model):
     album = models.ForeignKey(Album, blank=False, null=False, on_delete=models.CASCADE, related_name='tracks')
     number = models.IntegerField()
     title = models.CharField(max_length=50)
+
