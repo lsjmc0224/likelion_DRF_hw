@@ -15,20 +15,9 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class TrackSerializer(serializers.ModelSerializer):
 
-    album = serializers.SerializerMethodField()
+    # album = serializers.SerializerMethodField()
 
     class Meta:
         model = Track
         fields = '__all__'
         read_only_fields = ['album']
-
-    def get_album(self, instance):
-        serializer = AlbumSerializer(instance.album, many=True)
-        return serializer.data
-
-# class TrackSerializer(serializers.ModelSerializer):
-    
-#     class Meta:
-#         model = Track
-#         fields = '__all__'
-#         read_only_fields = ['album']

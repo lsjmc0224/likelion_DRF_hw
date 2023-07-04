@@ -12,8 +12,8 @@ from django.shortcuts import get_object_or_404
 def album_list_create(request):
 
     if request.method == 'GET':
-        album = Album.objects.all()
-        serializer = AlbumSerializer(album, many=True)
+        albums = Album.objects.all()
+        serializer = AlbumSerializer(albums, many=True)
         return Response(data=serializer.data)
     
     if request.method == 'POST':
@@ -57,47 +57,3 @@ def track_list_create(request, album_id):
         if serializer.is_valid():
             serializer.save(album=album)
         return Response(serializer.data)
-
-@api_view(['GET', 'PATCH', 'DELETE'])
-def track_detail_update_delete(request, track_id):
-    track = get_object_or_404(Track, id=track_id)
-
-    if request.method == 'GET':
-        serializer = TrackSerializer(track)
-        return Response(serializer.data)
-    
-    elif request.method == 'PATCH':
-        serializer = TrackSerializer(instance=track, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(serializer.data)
-    
-    elif request.method == 'DELETE':
-        track.delete()
-        data = {
-            'deleted_track': track_id
-        }
-        return Response(data)
-
-
-
-# @api_view(['GET', 'PATCH', 'DELETE'])
-# def track_detail_update_delete(request, track_id):
-#     track = get_object_or_404(Track, id=track_id)
-
-#     if request.method == 'GET':
-#         serializer = TrackSerializer(track)
-#         return Response(serializer.data)
-    
-#     elif request.method == 'PATCH':
-#         serializer = TrackSerializer(instance=track, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#         return Response(serializer.data)
-    
-#     elif request.method == 'DELETE':
-#         track.delete()
-#         data = {
-#             'deleted_track': track_id
-#         }
-#         return Response(data)
