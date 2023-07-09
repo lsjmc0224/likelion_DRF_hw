@@ -7,13 +7,14 @@ class Tag(models.Model):
 
 class Album(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=50)
     artist = models.CharField(max_length=50)
+    title = models.CharField(max_length=50)
+    year = models.IntegerField()
     description = models.TextField(max_length=200)
-    year = models.PositiveIntegerField()
 
 class Track(models.Model):
     id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, blank=False, null=False, on_delete=models.CASCADE, related_name='tracks')
-    number = models.PositiveIntegerField()
+    number = models.IntegerField()
     title = models.CharField(max_length=50)
+
