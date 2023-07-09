@@ -9,5 +9,5 @@ urlpatterns = [
     path('<int:album_id>/track', views.track_read_create),
     path('<int:album_id>/track/<int:track_id>', views.track_list_update_delete),
     path('tags/<str:tag_name>', views.find_tag),
-
+    path('tagsearch', views.find_tag_post),
 ]
