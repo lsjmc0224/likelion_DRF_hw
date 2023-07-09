@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Album, Track
-from .serializers import AlbumSerializer, TrackSerializer
+from .models import Album, Track, Tag
+from .serializers import AlbumSerializer, TrackSerializer, TagSerializer
 
 from django.shortcuts import get_object_or_404
 
@@ -20,7 +20,22 @@ def album_list_create(request):
         serializer = AlbumSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(data=serializer.data)
+            description = request.data['description']
+            words = description.split(' ')
+            tag_list = []
+            for w in words:
+                if w[0] == '#':
+                    tag_list.append(w[1:])
+            for t in tag_list:
+                try:
+                    tag = get_object_or_404(Tag, name=t)
+                except:
+                    tag = Tag(name=t)
+                    tag.save()
+                album = get_object_or_404(Album, id=serializer.data['id'])
+                album.tag.add(tag)
+            album.save()
+    return Response(data = AlbumSerializer(album).data)
         
 @api_view(['GET', 'PATCH', 'DELETE'])
 def album_detail_update_delete(request, album_id):
@@ -34,7 +49,23 @@ def album_detail_update_delete(request, album_id):
         serializer = AlbumSerializer(instance=album, data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
+            album = get_object_or_404(Album, id=serializer.data['id'])
+            album.tag.clear()
+            description = request.data['description']
+            words = description.split(' ')
+            tag_list = []
+            for w in words:
+                if w[0] == '#':
+                    tag_list.append(w[1:])
+            for t in tag_list:
+                try:
+                    tag = get_object_or_404(Tag, name=t)
+                except:
+                    tag = Tag(name=t)
+                    tag.save()
+                album.tag.add(tag)
+            album.save()
+        return Response(AlbumSerializer(album).data)
     
     elif request.method == 'DELETE':
         album.delete()
@@ -79,3 +110,18 @@ def track_list_update_delete(request, album_id, track_id):
             'deleted_track':track_id
         }
         return Response(data)
+
+@api_view(['GET', 'POST'])
+def find_tag(request, tag_name):
+
+    if request.method == 'GET':
+        f_tag = get_object_or_404(Tag, name=tag_name)
+        album = Album.objects.filter(tag__in = [f_tag])
+        serializer = AlbumSerializer(album, many=True)
+        return Response(data=serializer.data)
+    
+    if request.method == 'POST':
+        serializer = AlbumSerializer(data=tag_name)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response(data=serializer.data)
