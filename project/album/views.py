@@ -111,17 +111,20 @@ def track_list_update_delete(request, album_id, track_id):
         }
         return Response(data)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def find_tag(request, tag_name):
+    f_tag = get_object_or_404(Tag, name=tag_name)
 
     if request.method == 'GET':
-        f_tag = get_object_or_404(Tag, name=tag_name)
         album = Album.objects.filter(tag__in = [f_tag])
         serializer = AlbumSerializer(album, many=True)
         return Response(data=serializer.data)
+
+@api_view(['POST'])
+def find_tag_post(request):
+    f_tag = request.data['name']
     
     if request.method == 'POST':
-        serializer = AlbumSerializer(data=tag_name)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+        album = Album.objects.filter(tag__in = [f_tag])
+        serializer = AlbumSerializer(album, many=True)
         return Response(data=serializer.data)
