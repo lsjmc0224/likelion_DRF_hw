@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import *
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+        
 class AlbumSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
     tracks = serializers.SerializerMethodField(read_only=True)
